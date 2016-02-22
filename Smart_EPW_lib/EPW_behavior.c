@@ -600,6 +600,8 @@ void parse_Joystick_dir() //unsigned uint16_t Joystick_cmd
 	if(ADC1ConvertedVoltage[1] >= 3000 && ADC1ConvertedVoltage[1] - 2362 > ADC1ConvertedVoltage[0] - 2305 && ADC1ConvertedVoltage[1] - 2362 > 2305 - ADC1ConvertedVoltage[0]){ //move forward
 		if (data_sending != 1 && car_state == CAR_STATE_IDLE) // Do not control the wheelchair when sending data with usart!
 			{
+				/*Neural_Control*/
+				/*
 				controller_initialize(&n_r);
 				controller_initialize(&n_l);
 
@@ -614,7 +616,11 @@ void parse_Joystick_dir() //unsigned uint16_t Joystick_cmd
 					neural_checkstop(&n_l_back);
 				}
 				car_state = CAR_STATE_MOVE_FORWARD;
-			}
+			}*/
+
+				/*PWM_Control (analog_output/DAC), pin: PA4, PA5*/
+
+
 		}
 		else if(ADC1ConvertedVoltage[0] < 3000 && ADC1ConvertedVoltage[1] < 3000 && ADC1ConvertedVoltage[0] > 1500 && ADC1ConvertedVoltage[1] > 1500){  //stop
 				car_state = CAR_STATE_STOPPING;
