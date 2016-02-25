@@ -9,7 +9,7 @@ void init_Wheels() {
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE); //portA enable
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE); // portC enable
 
-    GPIO_InitStructure.GPIO_Pin = Wheels | EnableWheels;  // PA8,9,10,11 | PC6,7
+    GPIO_InitStructure.GPIO_Pin = Wheels | EnableWheels;  // PA8,9,10,13 | PC6,7
     //GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;  //alternate function
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
@@ -22,7 +22,7 @@ void init_Wheels() {
     GPIO_PinAFConfig(GPIOA, GPIO_PinSource8, GPIO_AF_TIM1); //PA8(TIM1_Ch1)
     GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_TIM1); //PA9(TIM1_CH2)
     GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_TIM1); //PA10(TIM1_CH3)
-    GPIO_PinAFConfig(GPIOA, GPIO_PinSource11, GPIO_AF_TIM1); //PA11(TIM1_CH4)
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource13, GPIO_AF_TIM1); //PA13(TIM1_CH4)
 
      GPIO_PinAFConfig(GPIOC, GPIO_PinSource6, GPIO_AF_TIM3); //PC6(TIM3_CH1)
      GPIO_PinAFConfig(GPIOC, GPIO_PinSource7, GPIO_AF_TIM3); //PC7(TIM3_Ch2)
@@ -78,7 +78,7 @@ void init_PWM() {
     TIM_OC3PreloadConfig(TIM1, TIM_OCPreload_Enable);
 
     
-    /* PWM1 Mode configuration: Channel1 (GPIOA Pin 11)*/
+    /* PWM1 Mode configuration: Channel1 (GPIOA Pin 13)*/
     TIM_OC4Init(TIM1, &TIM_OCInitStructure);  //channel 4
     TIM_OC4PreloadConfig(TIM1, TIM_OCPreload_Enable);
 //---------------------------
