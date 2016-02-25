@@ -83,6 +83,7 @@ SRC+=unit_tests.c
 SRC+=linear_actuator.c
 SRC+=delay.c
 SRC+=ultrasound.c
+SRC+=PWM.c
 
 
 # FreeRTOS Source Files

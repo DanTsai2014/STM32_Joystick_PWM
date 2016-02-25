@@ -9,6 +9,7 @@
 #include "EPW_command.h"
 #include "PID.h"
 #include "linear_actuator.h"
+#include "PWM.h"
 
 #define B_phase 1
 #define NEURAL_IDENTIFIER 1
@@ -595,10 +596,10 @@ void speeed_initialize(){
  **============================================================================*/
 /*============================================================================*/
 
-void parse_Joystick_dir() //unsigned uint16_t Joystick_cmd
+void parse_Joystick_dir(void *p) //unsigned uint16_t Joystick_cmd
 {
-	if(ADC1ConvertedVoltage[1] >= 3000 && ADC1ConvertedVoltage[1] - 2362 > ADC1ConvertedVoltage[0] - 2305 && ADC1ConvertedVoltage[1] - 2362 > 2305 - ADC1ConvertedVoltage[0]){ //move forward
-		if (data_sending != 1 && car_state == CAR_STATE_IDLE) // Do not control the wheelchair when sending data with usart!
+	if(ADC1ConvertedVoltage[1] >= 3000 && ADC1ConvertedVoltage[1] - 2362 > ADC1ConvertedVoltage[0] - 2305 && ADC1ConvertedVoltage[1] - 2362 > 2305 - ADC1ConvertedVoltage[0]){ //forward
+		if (data_sending != 1) /*&& car_state == CAR_STATE_IDLE) // Do not control the wheelchair when sending data with usart!
 			{
 				/*Neural_Control*/
 				/*
@@ -619,14 +620,30 @@ void parse_Joystick_dir() //unsigned uint16_t Joystick_cmd
 			}*/
 
 				/*PWM_Control (analog_output/DAC), pin: PA4, PA5*/
-
-
-		}
+				TIM_SetCompare1(TIM3, 256 - 1);
+				TIM_SetCompare2(TIM3, 256 - 1);
+				TIM_SetCompare1(TIM1, 0);
+				TIM_SetCompare2(TIM1, 127);
+				TIM_SetCompare3(TIM1, 0);
+				TIM_SetCompare4(TIM1, 127);
+				vTaskDelay(1200);
+				reset_Wheels();
+				vTaskDelay(100);
+		    }
 		else if(ADC1ConvertedVoltage[0] < 3000 && ADC1ConvertedVoltage[1] < 3000 && ADC1ConvertedVoltage[0] > 1500 && ADC1ConvertedVoltage[1] > 1500){  //stop
-				car_state = CAR_STATE_STOPPING;
+				//car_state = CAR_STATE_STOPPING;
+			TIM_SetCompare1(TIM3, 0);
+			TIM_SetCompare2(TIM3, 0);
+			TIM_SetCompare1(TIM1, 0);
+			TIM_SetCompare2(TIM1, 0);
+			TIM_SetCompare3(TIM1, 0);
+			TIM_SetCompare4(TIM1, 0);
+			vTaskDelay(1200);
+			reset_Wheels();
+			vTaskDelay(100);
 		}
-		else if(data_sending != 1 && ADC1ConvertedVoltage[1] <= 1500 && 2362 - ADC1ConvertedVoltage[1] > 2305 - ADC1ConvertedVoltage[0] && 2362 - ADC1ConvertedVoltage[1] > ADC1ConvertedVoltage[0] - 2305){  //move back
-			if(car_state == CAR_STATE_IDLE){
+		else if(data_sending != 1 && ADC1ConvertedVoltage[1] <= 1500 && 2362 - ADC1ConvertedVoltage[1] > 2305 - ADC1ConvertedVoltage[0] && 2362 - ADC1ConvertedVoltage[1] > ADC1ConvertedVoltage[0] - 2305){  //backward
+			/*if(car_state == CAR_STATE_IDLE){
 				controller_initialize(&n_r_back);
 				controller_initialize(&n_l_back);
 
@@ -641,10 +658,19 @@ void parse_Joystick_dir() //unsigned uint16_t Joystick_cmd
 					neural_checkstop(&n_l_back);
 				}
 				car_state = CAR_STATE_MOVE_BACK;
-            }
+            }*/
+				TIM_SetCompare1(TIM3, 256 - 1);
+				TIM_SetCompare2(TIM3, 256 - 1);
+				TIM_SetCompare1(TIM1, 127);
+				TIM_SetCompare2(TIM1, 0);
+				TIM_SetCompare3(TIM1, 127);
+				TIM_SetCompare4(TIM1, 0);
+				vTaskDelay(1200);
+				reset_Wheels();
+				vTaskDelay(100);
 		}
-        else if(data_sending != 1 && ADC1ConvertedVoltage[0] >= 3000 && ADC1ConvertedVoltage[0] - 2305 > ADC1ConvertedVoltage[1] - 2362 && ADC1ConvertedVoltage[0] -2305 > 2362 - ADC1ConvertedVoltage[1]){  //move left
-        	if(car_state == CAR_STATE_IDLE){
+        else if(data_sending != 1 && ADC1ConvertedVoltage[0] >= 3000 && ADC1ConvertedVoltage[0] - 2305 > ADC1ConvertedVoltage[1] - 2362 && ADC1ConvertedVoltage[0] -2305 > 2362 - ADC1ConvertedVoltage[1]){  //left
+        	/*if(car_state == CAR_STATE_IDLE){
 				controller_initialize(&n_r);
 				controller_initialize(&n_l_back);
 
@@ -660,10 +686,19 @@ void parse_Joystick_dir() //unsigned uint16_t Joystick_cmd
 				}
 
                 car_state = CAR_STATE_MOVE_LEFT;
-            }
+            }*/
+                TIM_SetCompare1(TIM3, 256 - 1);
+				TIM_SetCompare2(TIM3, 256 - 1);
+                TIM_SetCompare1(TIM1, 127);
+                TIM_SetCompare2(TIM1, 0);
+                TIM_SetCompare3(TIM1, 0);
+                TIM_SetCompare4(TIM1, 127);
+                vTaskDelay(1200);
+				reset_Wheels();
+				vTaskDelay(100);
 		}
-        else if(data_sending != 1 && ADC1ConvertedVoltage[0] <= 1500 && 2305 - ADC1ConvertedVoltage[0] > 2362 - ADC1ConvertedVoltage[1] && 2305 - ADC1ConvertedVoltage[0] > ADC1ConvertedVoltage[1] - 2362){  //move right
-        	if(car_state == CAR_STATE_IDLE){
+        else if(data_sending != 1 && ADC1ConvertedVoltage[0] <= 1500 && 2305 - ADC1ConvertedVoltage[0] > 2362 - ADC1ConvertedVoltage[1] && 2305 - ADC1ConvertedVoltage[0] > ADC1ConvertedVoltage[1] - 2362){  //right
+        	/*if(car_state == CAR_STATE_IDLE){
 				controller_initialize(&n_r_back);
 				controller_initialize(&n_l);
 
@@ -679,7 +714,16 @@ void parse_Joystick_dir() //unsigned uint16_t Joystick_cmd
 				}
 
                 car_state = CAR_STATE_MOVE_RIGHT;
-            }
+            }*/
+                TIM_SetCompare1(TIM3, 256 - 1);
+				TIM_SetCompare2(TIM3, 256 - 1);
+                TIM_SetCompare1(TIM1, 0);
+                TIM_SetCompare2(TIM1, 127);
+                TIM_SetCompare3(TIM1, 127);
+                TIM_SetCompare4(TIM1, 0);
+                vTaskDelay(1200);
+				reset_Wheels();
+				vTaskDelay(100);
 		}
 		else if(((ADC1ConvertedVoltage[0] <= 2200 && ADC1ConvertedVoltage[0] >= 1975) || (ADC1ConvertedVoltage[0] >= 2350 && ADC1ConvertedVoltage[0] <= 2555)) || 
 	            ((ADC1ConvertedVoltage[1] <= 2335 && ADC1ConvertedVoltage[1] >= 2239) || (ADC1ConvertedVoltage[1] >= 2380 && ADC1ConvertedVoltage[1] <= 2480))){
@@ -692,7 +736,7 @@ void parse_Joystick_dir() //unsigned uint16_t Joystick_cmd
 		} 
 		else{
 		}
-}
+ }
 
 
 
@@ -798,7 +842,7 @@ void PerformCommand(unsigned char group,unsigned char control_id, unsigned char 
 		{
 		    case EPW_MOTOR_DIR: //direction //moveWheelchair //EPW_MOTOR_DIR=100,equal to char 'd'
 		        parse_EPW_motor_dir(value);
-		        parse_Joystick_dir();
+		        //parse_Joystick_dir();
 		        break;
 		    case EPW_MOTOR_PWM: //speed //EPW_MOTOR_PWM=101,equal to char 'e' //sb_Speed:turnOn, setSpeed='e', speedValue
 		        motor_speed_value = value; /*0~10 scale*/ //can't find motor_speed_value
